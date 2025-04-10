@@ -3,9 +3,9 @@
 namespace Aporat\Laravel\ApiMiddleware\Tests;
 
 use Aporat\Laravel\ApiMiddleware\NoCache;
-use Orchestra\Testbench\TestCase;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Orchestra\Testbench\TestCase;
 
 class NoCacheTest extends TestCase
 {
@@ -17,9 +17,9 @@ class NoCacheTest extends TestCase
     public function test_no_cache_headers_are_applied()
     {
         $request = Request::create('/test', 'GET');
-        $middleware = new NoCache();
+        $middleware = new NoCache;
 
-        $response = $middleware->handle($request, fn($req) => new JsonResponse(['data' => 'test']));
+        $response = $middleware->handle($request, fn ($req) => new JsonResponse(['data' => 'test']));
 
         $this->assertInstanceOf(JsonResponse::class, $response);
 
@@ -39,7 +39,7 @@ class NoCacheTest extends TestCase
         $request = Request::create('/test', 'GET');
         $middleware = new NoCache('no-cache, max-age=0', 'no-store');
 
-        $response = $middleware->handle($request, fn($req) => response('OK'));
+        $response = $middleware->handle($request, fn ($req) => response('OK'));
 
         $cacheControl = $response->headers->get('Cache-Control');
         $this->assertStringContainsString('no-cache', $cacheControl);

@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 final class TrustProxies
 {
     protected array $proxies;
+
     protected int $headers = SymfonyRequest::HEADER_X_FORWARDED_AWS_ELB;
 
     public function __construct($proxies = null)

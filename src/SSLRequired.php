@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 final class SSLRequired
 {
     protected array $exceptRoutes = ['/ping'];
+
     protected array $exceptEnvironments = ['development', 'testing'];
 
     public function __construct(?array $exceptRoutes = null, ?array $exceptEnvironments = null)
@@ -21,7 +22,7 @@ final class SSLRequired
 
     public function handle(Request $request, Closure $next): mixed
     {
-        if (!$this->isExempt($request) && !$request->secure()) {
+        if (! $this->isExempt($request) && ! $request->secure()) {
             throw new SslRequiredException('SSL Required', 403, $request);
         }
 

@@ -12,7 +12,7 @@ A Laravel package offering middleware to enhance API security and performance wi
 
 ## Requirements
 - **PHP**: 8.4 or higher
-- **Laravel**: 10.x, 11.x, 12.x
+- **Laravel**: 11.x, 12.x
 
 ## Installation
 Install the package via [Composer](https://getcomposer.org/):

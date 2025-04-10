@@ -13,6 +13,7 @@ use Illuminate\Http\Response;
 final class NoCache
 {
     protected string $cacheControl = 'no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0';
+
     protected string $pragma = 'no-cache';
 
     public function __construct(?string $cacheControl = null, ?string $pragma = null)

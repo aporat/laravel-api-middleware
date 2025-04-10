@@ -14,13 +14,13 @@ class ApiMiddlewareServiceProvider extends ServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../config/api-middleware.php' => config_path('api-middleware.php'),
+                __DIR__.'/../config/api-middleware.php' => config_path('api-middleware.php'),
             ], 'config');
         }
     }
 
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/api-middleware.php', 'api-middleware');
+        $this->mergeConfigFrom(__DIR__.'/../config/api-middleware.php', 'api-middleware');
     }
 }
