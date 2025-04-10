@@ -1,0 +1,30 @@
+{
+  "name": "aporat/laravel-api-middleware",
+  "description": "A Laravel package for API middleware including trust proxies, SSL, and no-cache.",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Aporat\\Laravel\\ApiMiddleware\\": "src/"
+    }
+  },
+  "require": {
+    "php": "^8.4",
+    "illuminate/support": "^10.0|^11.0|^12.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^12.0",
+    "orchestra/testbench": "^9.0|^10.0",
+    "laravel/pint": "^1.0"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Aporat\\Laravel\\ApiMiddleware\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit",
+    "test-ci": "phpunit --coverage-text --coverage-clover coverage.xml --log-junit junit.xml",
+    "check": "vendor/bin/pint --test"
+  }
+}
