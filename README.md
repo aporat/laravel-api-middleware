@@ -5,7 +5,7 @@ A Laravel package providing middleware for API enhancement, including trust prox
 [![Monthly Downloads](https://img.shields.io/packagist/dm/aporat/laravel-api-middleware.svg?style=flat-square&logo=composer)](https://packagist.org/packages/aporat/laravel-api-middleware)
 [![Codecov](https://img.shields.io/codecov/c/github/aporat/laravel-api-middleware?style=flat-square)](https://codecov.io/github/aporat/laravel-api-middleware)
 [![Laravel Version](https://img.shields.io/badge/Laravel-12.x-orange.svg?style=flat-square)](https://laravel.com/docs/12.x)
-\![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/aporat/laravel-api-middleware/ci.yml?style=flat-square)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/aporat/laravel-api-middleware/ci.yml?style=flat-square)
 [![License](https://img.shields.io/packagist/l/aporat/laravel-api-middleware.svg?style=flat-square)](https://github.com/aporat/laravel-api-middleware/blob/master/LICENSE)
 
 A Laravel package offering middleware to enhance API security and performance with trust proxies, cache prevention, and SSL enforcement.
@@ -21,7 +21,7 @@ Install the package via [Composer](https://getcomposer.org/):
 composer require aporat/laravel-api-middleware
 ```
 
-The service provider (\`ApiMiddlewareServiceProvider\`) is automatically registered via Laravel's package discovery. If auto-discovery is disabled, add it to \`config/app.php\`:
+The service provider (`ApiMiddlewareServiceProvider`) is automatically registered via Laravel's package discovery. If auto-discovery is disabled, add it to `config/app.php`:
 
 ```php
 'providers' => [
@@ -36,7 +36,7 @@ Publish the configuration file:
 php artisan vendor:publish --provider="Aporat\\Laravel\\ApiMiddleware\\ApiMiddlewareServiceProvider" --tag="config"
 ```
 
-This copies \`api-middleware.php\` to your \`config/\` directory.
+This copies \`api-middleware.php\` to your `config/` directory.
 
 ## Configuration
 
@@ -61,9 +61,9 @@ return [
 ];
 ```
 
-- **\`trust_proxies\`**: Defines trusted proxy IPs or CIDR ranges and headers for proxy trust (e.g., AWS ELB).
-- **\`no_cache\`**: Sets \`Cache-Control\` and \`Pragma\` headers to prevent caching.
-- **\`ssl_required\`**: Configures routes and environments exempt from SSL enforcement.
+- **`trust_proxies`**: Defines trusted proxy IPs or CIDR ranges and headers for proxy trust (e.g., AWS ELB).
+- **`no_cache`**: Sets `Cache-Control` and `Pragma` headers to prevent caching.
+- **`ssl_required`**: Configures routes and environments exempt from SSL enforcement.
 
 ## Usage
 
@@ -77,9 +77,9 @@ Route::middleware(['trust.proxies', 'no.cache', 'ssl.required'])->get('/test', f
 });
 ```
 
-- **\`trust.proxies\`**: Trusts specified proxies for accurate request data (e.g., IP addresses).
-- **\`no.cache\`**: Prevents caching of API responses.
-- **\`ssl.required\`**: Enforces HTTPS, throwing an exception for non-secure requests (except exempted routes/environments).
+- **`trust.proxies`**: Trusts specified proxies for accurate request data (e.g., IP addresses).
+- **`no.cache`**: Prevents caching of API responses.
+- **`ssl.required`**: Enforces HTTPS, throwing an exception for non-secure requests (except exempted routes/environments).
 
 ### Manual Instantiation
 Resolve an instance with custom settings in a controller or service:
@@ -133,9 +133,9 @@ Requires Xdebug or PCOV for coverage reports.
 ## Contributing
 Contributions are welcome! Please:
 1. Fork the repository.
-2. Create a feature branch (\`git checkout -b feature/your-feature\`).
-3. Commit your changes (\`git commit -m 'Add your feature'\`).
-4. Push to the branch (\`git push origin feature/your-feature\`).
+2. Create a feature branch (`git checkout -b feature/your-feature`).
+3. Commit your changes (`git commit -m 'Add your feature'`).
+4. Push to the branch (`git push origin feature/your-feature`).
 5. Open a pull request.
 
 ## License
@@ -143,4 +143,4 @@ This package is open-sourced under the [MIT License](https://opensource.org/lice
 
 ## Support
 - **Issues**: [github.com/aporat/laravel-api-middleware/issues](https://github.com/aporat/laravel-api-middleware/issues)
-- *\*Source\*\*: [github.com/aporat/laravel-api-middleware](https://github.com/aporat/laravel-api-middleware)
+- **Source**: [github.com/aporat/laravel-api-middleware](https://github.com/aporat/laravel-api-middleware)
