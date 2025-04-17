@@ -52,10 +52,8 @@ jobs:
             ${{ matrix.os }}-${{ matrix.php }}-${{ matrix.laravel }}-vendor-
 
       - name: Install Dependencies
-        run: |
-          composer require "laravel/framework:${{ matrix.laravel }}" --no-update --ignore-platform-reqs
-          composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --ignore-platform-reqs
-
+        uses: ramsey/composer-install@v3
+      
       - name: Execute Linter
         run: composer check
         if: matrix.coverage == 'none'
