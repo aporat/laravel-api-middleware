@@ -52,7 +52,7 @@ jobs:
             ${{ matrix.os }}-${{ matrix.php }}-${{ matrix.laravel }}-vendor-
 
       - name: Install Dependencies
-        uses: ramsey/composer-install@v3
+        uses: ramsey/composer-install@v4
       
       - name: Execute Linter
         run: composer check
