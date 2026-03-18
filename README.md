@@ -4,7 +4,7 @@ A Laravel package providing middleware for API enhancement, including trust prox
 [![Latest Stable Version](https://img.shields.io/packagist/v/aporat/laravel-api-middleware.svg?style=flat-square&logo=composer)](https://packagist.org/packages/aporat/laravel-api-middleware)
 [![Monthly Downloads](https://img.shields.io/packagist/dm/aporat/laravel-api-middleware.svg?style=flat-square&logo=composer)](https://packagist.org/packages/aporat/laravel-api-middleware)
 [![Codecov](https://img.shields.io/codecov/c/github/aporat/laravel-api-middleware?style=flat-square)](https://codecov.io/github/aporat/laravel-api-middleware)
-[![Laravel Version](https://img.shields.io/badge/Laravel-12.x-orange.svg?style=flat-square)](https://laravel.com/docs/12.x)
+[![Laravel Version](https://img.shields.io/badge/Laravel-13.x-orange.svg?style=flat-square)](https://laravel.com/docs/13.x)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/aporat/laravel-api-middleware/ci.yml?style=flat-square)
 [![License](https://img.shields.io/packagist/l/aporat/laravel-api-middleware.svg?style=flat-square)](https://github.com/aporat/laravel-api-middleware/blob/master/LICENSE)
 
@@ -12,7 +12,7 @@ A Laravel package offering middleware to enhance API security and performance wi
 
 ## Requirements
 - **PHP**: 8.4 or higher
-- **Laravel**: 11.x, 12.x
+- **Laravel**: 13.x
 
 ## Installation
 Install the package via [Composer](https://getcomposer.org/):
