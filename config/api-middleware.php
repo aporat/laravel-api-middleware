@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
+use Symfony\Component\HttpFoundation\Request;
+
 return [
     'trust_proxies' => [
         'proxies' => ['127.0.0.1', '10.0.0.0/24', '10.0.0.0/8'],
-        'headers' => \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_AWS_ELB,
+        'headers' => Request::HEADER_X_FORWARDED_AWS_ELB,
     ],
     'no_cache' => [
         'cache_control' => 'no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0',
