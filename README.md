@@ -11,7 +11,7 @@ A Laravel package providing middleware for API enhancement, including trust prox
 A Laravel package offering middleware to enhance API security and performance with trust proxies, cache prevention, and SSL enforcement.
 
 ## Requirements
-- **PHP**: 8.4 or higher
+- **PHP**: 8.4, 8.5
 - **Laravel**: 13.x
 
 ## Installation
