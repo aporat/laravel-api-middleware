@@ -26,44 +26,56 @@ The service provider (`ApiMiddlewareServiceProvider`) is automatically registere
 ```php
 'providers' => [
     // ...
-    Aporat\\Laravel\\ApiMiddleware\\ApiMiddlewareServiceProvider::class,
+    Aporat\Laravel\ApiMiddleware\ApiMiddlewareServiceProvider::class,
 ],
 ```
 
 Publish the configuration file:
 
 ```bash
-php artisan vendor:publish --provider="Aporat\\Laravel\\ApiMiddleware\\ApiMiddlewareServiceProvider" --tag="config"
+php artisan vendor:publish --provider="Aporat\Laravel\ApiMiddleware\ApiMiddlewareServiceProvider" --tag="api-middleware-config"
 ```
 
-This copies \`api-middleware.php\` to your `config/` directory.
+This copies `api-middleware.php` to your `config/` directory.
 
 ## Configuration
 
-Edit \`config/api-middleware.php\` to customize the middleware settings:
+Edit `config/api-middleware.php` to customize the middleware settings:
 
 ```php
 <?php
 
 return [
     'trust_proxies' => [
-        'proxies' => ['127.0.0.1', '10.0.0.0/24', '10.0.0.0/8'],
-        'headers' => \\Symfony\\Component\\HttpFoundation\\Request::HEADER_X_FORWARDED_AWS_ELB,
+        // IPs/CIDRs, a comma separated string, "REMOTE_ADDR", or "*" for any proxy.
+        'proxies' => ['127.0.0.1', '10.0.0.0/8'],
+        // A Request::HEADER_* bitmask, a named set, or a list of names.
+        'headers' => 'x_forwarded_aws_elb',
     ],
     'no_cache' => [
         'cache_control' => 'no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0',
         'pragma' => 'no-cache',
+        'expires' => '0',
     ],
     'ssl_required' => [
-        'except_routes' => ['/ping'],
-        'except_environments' => ['development', 'local'],
+        // Path patterns for Request::is() — leading slash optional, "*" supported.
+        'except_routes' => ['ping'],
+        'except_environments' => ['local', 'development', 'testing'],
+        'status' => 403,
     ],
 ];
 ```
 
-- **`trust_proxies`**: Defines trusted proxy IPs or CIDR ranges and headers for proxy trust (e.g., AWS ELB).
-- **`no_cache`**: Sets `Cache-Control` and `Pragma` headers to prevent caching.
-- **`ssl_required`**: Configures routes and environments exempt from SSL enforcement.
+- **`trust_proxies`**: Trusted proxy IPs/CIDRs and which `X-Forwarded-*` headers to honour.
+  `headers` accepts a raw `Symfony\Component\HttpFoundation\Request::HEADER_*` bitmask, one of
+  the named sets below, or a list of names that are OR'd together:
+  `forwarded`, `x_forwarded_for`, `x_forwarded_host`, `x_forwarded_proto`, `x_forwarded_port`,
+  `x_forwarded_prefix`, `x_forwarded_aws_elb` (the default), `x_forwarded_traefik`.
+- **`no_cache`**: `Cache-Control`, `Pragma` and `Expires` values. Setting any of them to `null`
+  omits the header and strips one set upstream. Symfony normalises `Cache-Control` — directives
+  come back alphabetised with `private` appended unless `public`/`s-maxage` is present — so the
+  emitted header will not match the configured string character for character.
+- **`ssl_required`**: Exempt path patterns / environments, and the HTTP status used for rejections.
 
 ## Usage
 
@@ -77,43 +89,63 @@ Route::middleware(['trust.proxies', 'no.cache', 'ssl.required'])->get('/test', f
 });
 ```
 
-- **`trust.proxies`**: Trusts specified proxies for accurate request data (e.g., IP addresses).
+- **`trust.proxies`**: Trusts the configured proxies so `X-Forwarded-*` headers are honoured
+  when resolving the client IP, scheme and port.
 - **`no.cache`**: Prevents caching of API responses.
-- **`ssl.required`**: Enforces HTTPS, throwing an exception for non-secure requests (except exempted routes/environments).
+- **`ssl.required`**: Rejects plain-HTTP requests with an `SslRequiredException` (a Symfony
+  `HttpException`), except on exempt paths/environments.
+
+### Ordering with Laravel's own TrustProxies
+
+Laravel 13 always includes `Illuminate\Http\Middleware\TrustProxies` in the global stack, and it
+**resets** the trusted set on every request. Register this package's `TrustProxies` as a
+replacement rather than appending it, so it runs in the right slot instead of racing the built-in:
+
+```php
+// bootstrap/app.php
+use Aporat\Laravel\ApiMiddleware\NoCache;
+use Aporat\Laravel\ApiMiddleware\TrustProxies;
+
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->replace(\Illuminate\Http\Middleware\TrustProxies::class, TrustProxies::class);
+    $middleware->append(NoCache::class);
+})
+```
+
+`ssl.required` must run *after* `trust.proxies`, otherwise every request behind a TLS-terminating
+load balancer looks insecure.
+
+### Error handling
+
+`SslRequiredException` extends `Symfony\Component\HttpKernel\Exception\HttpException` and
+deliberately does **not** define a `render()` method — Laravel gives an exception's own `render()`
+precedence over the application's `Exceptions::render()` callbacks, so defining one would force the
+package's error shape onto the host app. Format it however your app formats HTTP errors:
+
+```php
+->withExceptions(function (Exceptions $exceptions) {
+    $exceptions->render(function (HttpException $e) {
+        return new JsonResponse([
+            'error_code' => $e->getStatusCode(),
+            'error_message' => $e->getMessage(),
+        ], $e->getStatusCode());
+    });
+})
+```
 
 ### Manual Instantiation
-Resolve an instance with custom settings in a controller or service:
 
 ```php
-use Aporat\\Laravel\\ApiMiddleware\\TrustProxies;
-use Aporat\\Laravel\\ApiMiddleware\\NoCache;
-use Aporat\\Laravel\\ApiMiddleware\\SSLRequired;
+use Aporat\Laravel\ApiMiddleware\NoCache;
+use Aporat\Laravel\ApiMiddleware\SSLRequired;
+use Aporat\Laravel\ApiMiddleware\TrustProxies;
 
-$trustProxies = new TrustProxies(['192.168.1.1']);
-$noCache = new NoCache('no-cache, max-age=0', 'no-store');
-$sslRequired = new SSLRequired(['/custom'], ['testing']);
-
-$response = $trustProxies->handle($request, function ($req) use ($noCache, $sslRequired) {
-    return $noCache->handle($req, function ($req) use ($sslRequired) {
-        return $sslRequired->handle($req, fn($req) => response()->json(['message' => 'API Enhanced!']));
-    });
-});
+$trustProxies = new TrustProxies(['192.168.1.1'], 'x_forwarded_for');
+$noCache = new NoCache('no-cache, max-age=0', pragma: null);
+$sslRequired = new SSLRequired(['health/*'], ['testing']);
 ```
 
-Or use dependency injection (requires binding adjustment in the service provider):
-
-```php
-use Aporat\\Laravel\\ApiMiddleware\\TrustProxies;
-use Illuminate\\Http\\Request;
-
-class ApiController extends Controller
-{
-    public function handleRequest(Request $request, TrustProxies $trustProxies)
-    {
-        return $trustProxies->handle($request, fn($req) => response()->json(['message' => 'Proxies Trusted!']));
-    }
-}
-```
+Passing `null` for any constructor argument falls back to the corresponding config value.
 
 ## Testing
 Run the package's unit tests:
